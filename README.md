@@ -9,6 +9,9 @@
 - REST API
 - Node.js
 - Express.js
+- Nodemon
+- MongoDB (NoSQL)
+- Mongoose (Object Document Mapper)
 
 ### Инфраструктура
 - Git
