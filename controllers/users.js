@@ -1,9 +1,40 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+
+const { CREATED } = require('../utils/consts');
 
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
+const ConflictError = require('../errors/conflict-err');
 
 module.exports = {
+  createUser(req, res, next) {
+    const {
+      email,
+      password,
+      name,
+    } = req.body;
+
+    bcrypt.hash(password, 10)
+      .then((hash) => User.create({
+        email,
+        password: hash,
+        name,
+      }))
+      .then((createdUser) => res.status(CREATED).send({
+        name: createdUser.name,
+        email: createdUser.email,
+      }))
+      .catch((error) => {
+        if (error.name === 'MongoError' && error.code === 11000) {
+          return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+        }
+        if (error.name === 'ValidationError') {
+          return next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
+        }
+        return next(error);
+      });
+  },
   getBio(req, res, next) {
     User.findById(req.user._id)
       .then((user) => {
@@ -14,9 +45,9 @@ module.exports = {
       })
       .catch((error) => {
         if (error.name === 'CastError') {
-          next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
+          return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
-        next(error);
+        return next(error);
       });
   },
   updateBio(req, res, next) {
@@ -36,12 +67,12 @@ module.exports = {
       })
       .catch((error) => {
         if (error.name === 'CastError') {
-          next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
+          return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
         if (error.name === 'ValidationError') {
-          next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
+          return next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
         }
-        next(error);
+        return next(error);
       });
   },
 };

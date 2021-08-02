@@ -1,5 +1,7 @@
 const Movie = require('../models/movie');
 
+const { CREATED } = require('../utils/consts');
+
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
 const ForbiddenError = require('../errors/forbidden-err');
@@ -11,9 +13,9 @@ module.exports = {
       .then((movies) => res.send(movies))
       .catch((error) => {
         if (error.name === 'CastError') {
-          next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
+          return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
-        next(error);
+        return next(error);
       });
   },
   create(req, res, next) {
@@ -47,16 +49,18 @@ module.exports = {
       nameEN,
     })
       .then((movie) => movie.populate('owner').execPopulate())
-      .then(((movie) => res.send(movie)))
+      .then(((movie) => res.status(CREATED).send(movie)))
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          next(new BadRequestError('Ошибка валидации данных movie. Проверьте корректность передаваемых значений.'));
+          return next(new BadRequestError('Ошибка валидации данных movie. Проверьте корректность передаваемых значений.'));
         }
-        next(error);
+        return next(error);
       });
   },
   remove(req, res, next) {
-    Movie.findOne({ movieId: req.params.movieId })
+    const { movieId } = req.params;
+
+    Movie.findOne({ movieId })
       .then((movie) => {
         if (!movie) {
           throw new NotFoundError('Фильм не найден.');
@@ -64,7 +68,7 @@ module.exports = {
         if (String(movie.owner) !== req.user._id) {
           throw new ForbiddenError('Невозможно удалить чужой фильм.');
         }
-        Movie.deleteOne({ movieId: req.params.movieId })
+        return Movie.deleteOne({ movieId: req.params.movieId })
           .then(() => res.send({ message: 'Фильм удален.' }));
       })
       .catch(next);
