@@ -59,7 +59,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        return validator.isInt(v);
+        return validator.isInt(String(v));
       },
     },
   },
