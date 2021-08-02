@@ -18,15 +18,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ! хардкод пока не реализована авторизация
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6106edb970995c73eaebaf97',
-  };
-
-  next();
-});
-
 app.use(routes);
 
 app.use(errorHandler);

@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const { CREATED } = require('../utils/consts');
@@ -6,6 +7,7 @@ const { CREATED } = require('../utils/consts');
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
 const ConflictError = require('../errors/conflict-err');
+const { JWT_SECRET } = require('../config');
 
 module.exports = {
   createUser(req, res, next) {
@@ -34,6 +36,38 @@ module.exports = {
         }
         return next(error);
       });
+  },
+  signin(req, res, next) {
+    const {
+      email,
+      password,
+    } = req.body;
+
+    User.findUserByCredentials(email, password)
+      .then((user) => {
+        const token = jwt.sign(
+          { _id: user._id },
+          JWT_SECRET,
+          { expiresIn: '7d' },
+        );
+
+        res.cookie('token', token, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        });
+        return res.send({ messsage: 'Все верно!' });
+      })
+      .catch((error) => {
+        if (error.name === 'ValidationError') {
+          return next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
+        }
+        return next(error);
+      });
+  },
+  signout(req, res) {
+    res.clearCookie('token');
+    return res.send({ message: 'Успешный выход из системы.' });
   },
   getBio(req, res, next) {
     User.findById(req.user._id)
