@@ -9,9 +9,13 @@
 - REST API
 - Node.js
 - Express.js
+  - Module routers
+  - Middlewares
 - Nodemon
 - MongoDB (NoSQL)
 - Mongoose (Object Document Mapper)
+- Centralized error handler
+- Postman
 
 ### Инфраструктура
 - Git

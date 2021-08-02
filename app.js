@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const routes = require('./routes/index');
 const errorHandler = require('./middlewares/error-handler');
 
@@ -15,6 +16,7 @@ mongoose.connect(MONGO_URL, {
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // ! хардкод пока не реализована авторизация
 app.use((req, res, next) => {
