@@ -37,12 +37,8 @@ module.exports = {
   },
   getBio(req, res, next) {
     User.findById(req.user._id)
-      .then((user) => {
-        if (!user) {
-          throw new NotFoundError('Запрашиваемый пользователь не найден.');
-        }
-        return res.send(user);
-      })
+      .orFail(() => new NotFoundError('Запрашиваемый пользователь не найден.'))
+      .then((user) => res.send(user))
       .catch((error) => {
         if (error.name === 'CastError') {
           return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
@@ -59,12 +55,8 @@ module.exports = {
         runValidators: true,
       },
     )
-      .then((user) => {
-        if (!user) {
-          throw new NotFoundError('Запрашиваемый пользователь не найден.');
-        }
-        return res.send(user);
-      })
+      .orFail(() => new NotFoundError('Запрашиваемый пользователь не найден.'))
+      .then((user) => res.send(user))
       .catch((error) => {
         if (error.name === 'CastError') {
           return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));

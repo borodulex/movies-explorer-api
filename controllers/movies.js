@@ -61,10 +61,8 @@ module.exports = {
     const { movieId } = req.params;
 
     Movie.findOne({ movieId })
+      .orFail(() => new NotFoundError('Фильм не найден.'))
       .then((movie) => {
-        if (!movie) {
-          throw new NotFoundError('Фильм не найден.');
-        }
         if (String(movie.owner) !== req.user._id) {
           throw new ForbiddenError('Невозможно удалить чужой фильм.');
         }
