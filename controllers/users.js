@@ -14,7 +14,7 @@ module.exports = {
       })
       .catch((error) => {
         if (error.name === 'CastError') {
-          next(new BadRequestError('Ошибка преобразования. Проверьте валидность передаваемого id.'));
+          next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
         next(error);
       });
@@ -36,7 +36,7 @@ module.exports = {
       })
       .catch((error) => {
         if (error.name === 'CastError') {
-          next(new BadRequestError('Ошибка преобразования. Проверьте валидность передаваемого id.'));
+          next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
         if (error.name === 'ValidationError') {
           next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
