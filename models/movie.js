@@ -55,8 +55,13 @@ const movieSchema = new mongoose.Schema({
     required: true,
   },
   movieId: {
-    type: String,
+    type: Number,
     required: true,
+    validate: {
+      validator(v) {
+        return validator.isInt(v);
+      },
+    },
   },
   nameRU: {
     type: String,
