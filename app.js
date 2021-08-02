@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
 const routes = require('./routes/index');
 const errorHandler = require('./middlewares/error-handler');
 
@@ -14,12 +15,14 @@ mongoose.connect(MONGO_URL, {
   useUnifiedTopology: true,
 });
 
+app.use(requestLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(routes);
 
+app.use(errorLogger);
 app.use(errorHandler);
 
 app.listen(PORT, () => {
