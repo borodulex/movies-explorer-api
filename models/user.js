@@ -7,23 +7,25 @@ const UnauthorizedError = require('../errors/unauthorized-err');
 const userSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
+    required: [true, 'Значение \'email\' обязательно'],
     unique: true,
     validate: {
       validator(v) {
         return validator.isEmail(v);
       },
+      message: 'Сбой валидатора для значения \'email\'. Ожидалась строка в формате email, а получено \'{VALUE}\'',
     },
   },
   password: {
     type: String,
-    required: true,
+    required: [true, 'Значение \'password\' обязательно'],
     select: false,
   },
   name: {
     type: String,
-    minLength: 2,
-    maxLength: 30,
+    required: [true, 'Значение \'name\' обязательно'],
+    minLength: [2, 'Значение \'name\' не может быть меньше 2, получено \'{VALUE}\''],
+    maxLength: [30, 'Значение \'name\' не может быть больше 30, получено \'{VALUE}\''],
   },
 });
 

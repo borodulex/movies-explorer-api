@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const { CREATED } = require('../utils/consts');
+const { parseValidationErrors } = require('../utils/utils');
 
 const NotFoundError = require('../errors/not-found-err');
 const BadRequestError = require('../errors/bad-request-err');
@@ -32,7 +33,7 @@ module.exports = {
           return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
         }
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
+          return next(new BadRequestError(`Ошибка валидации данных user: ${parseValidationErrors(error)}`));
         }
         return next(error);
       });
@@ -60,7 +61,7 @@ module.exports = {
       })
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
+          return next(new BadRequestError(`Ошибка валидации данных user: ${parseValidationErrors(error)}`));
         }
         return next(error);
       });
@@ -96,7 +97,7 @@ module.exports = {
           return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError('Ошибка валидации данных user. Проверьте корректность передаваемых значений.'));
+          return next(new BadRequestError(`Ошибка валидации данных movie: ${parseValidationErrors(error)}`));
         }
         return next(error);
       });

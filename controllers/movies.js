@@ -1,6 +1,7 @@
 const Movie = require('../models/movie');
 
 const { CREATED } = require('../utils/consts');
+const { parseValidationErrors } = require('../utils/utils');
 
 const BadRequestError = require('../errors/bad-request-err');
 const NotFoundError = require('../errors/not-found-err');
@@ -52,7 +53,7 @@ module.exports = {
       .then(((movie) => res.status(CREATED).send(movie)))
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError('Ошибка валидации данных movie. Проверьте корректность передаваемых значений.'));
+          return next(new BadRequestError(`Ошибка валидации данных movie: ${parseValidationErrors(error)}`));
         }
         return next(error);
       });
