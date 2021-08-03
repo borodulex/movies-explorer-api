@@ -10,9 +10,13 @@ const {
   signin,
   signout,
 } = require('../controllers/users');
+const {
+  validateUserBody,
+  validateCredentials,
+} = require('../middlewares/validations');
 
-router.post('/signup', createUser);
-router.post('/signin', signin);
+router.post('/signup', validateUserBody, createUser);
+router.post('/signin', validateCredentials, signin);
 router.use(auth);
 router.use('/users', userRouter);
 router.use('/movies', movieRouter);

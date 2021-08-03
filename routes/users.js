@@ -4,8 +4,9 @@ const {
   getBio,
   updateBio,
 } = require('../controllers/users');
+const { validateUserBio } = require('../middlewares/validations');
 
 router.get('/me', getBio);
-router.patch('/me', updateBio);
+router.patch('/me', validateUserBio, updateBio);
 
 module.exports = router;
