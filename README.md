@@ -15,6 +15,10 @@
 - MongoDB (NoSQL)
 - Mongoose (Object Document Mapper)
 - Centralized error handler
+- Joi and Celebrate validation
+- Winston request and response logger
+- Helmet
+- Express-rate-limit
 - Postman
 
 ### Инфраструктура
@@ -22,6 +26,7 @@
 - Editorconfig
 - ESLint
 - Airbnb JavaScript Style Guide (eslint-config-airbnb-base)
+
 
 ## Как использовать
 ### Запуск сборки
