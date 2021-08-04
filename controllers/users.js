@@ -93,6 +93,9 @@ module.exports = {
       .orFail(() => new NotFoundError('Запрашиваемый пользователь не найден.'))
       .then((user) => res.send(user))
       .catch((error) => {
+        if (error.name === 'MongoError' && error.code === 11000) {
+          return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+        }
         if (error.name === 'CastError') {
           return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
