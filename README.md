@@ -1,4 +1,7 @@
 # Movies Explorer API
+## Ссылки
+IP-адрес сервера: 178.154.196.18
+Домен: https://movies-explorer-borodulex.nomoredomains.club/api
 
 ## О проекте
 
