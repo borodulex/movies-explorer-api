@@ -126,7 +126,7 @@ const validateMovieId = celebrate({
       if (Types.ObjectId.isValid(value)) {
         return value;
       }
-      return helpers.message('Невалидный id пользователя');
+      return helpers.message('Невалидный id фильма');
     })
       .messages({
         'any.required': 'Значение \'movieId\' обязательно',
