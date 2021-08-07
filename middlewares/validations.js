@@ -14,7 +14,7 @@ const validateUserBody = celebrate({
         'string.min': 'Минимальная длина значения \'password\' - 8',
         'any.required': 'Значение \'password\' обязательно',
       }),
-    name: Joi.string().min(2).max(8).required()
+    name: Joi.string().min(2).max(30).required()
       .messages({
         'string.min': 'Минимальная длина значения \'name\' - 2',
         'string.max': 'Максимальная длина значения \'name\' - 30',
@@ -40,12 +40,13 @@ const validateCredentials = celebrate({
 
 const validateUserBio = celebrate({
   body: Joi.object().keys({
-    email: Joi.string().email()
+    email: Joi.string().required().email()
       .message('Значение \'email\' должно быть строкой в формате email'),
-    name: Joi.string().min(2).max(8)
+    name: Joi.string().min(2).max(30).required()
       .messages({
         'string.min': 'Минимальная длина значения \'name\' - 2',
         'string.max': 'Максимальная длина значения \'name\' - 30',
+        'any.required': 'Значение \'name\' обязательно',
       }),
   }),
 });
@@ -99,15 +100,6 @@ const validateMovieBody = celebrate({
       .messages({
         'any.required': 'Значение \'thumbnail\' обязательно',
       }),
-    owner: Joi.string().required().custom((value, helpers) => {
-      if (Types.ObjectId.isValid(value)) {
-        return value;
-      }
-      return helpers.message('Невалидный id пользователя');
-    })
-      .messages({
-        'any.required': 'Значение \'movieId\' обязательно',
-      }),
     movieId: Joi.number().required().custom((value, helpers) => {
       if (validator.isInt(String(value))) {
         return value;
@@ -130,14 +122,18 @@ const validateMovieBody = celebrate({
 
 const validateMovieId = celebrate({
   params: Joi.object().keys({
-    movieId: Joi.number().required().custom((value, helpers) => {
-      if (validator.isInt(String(value))) {
+    movieId: Joi.string().required().custom((value, helpers) => {
+      if (Types.ObjectId.isValid(value)) {
         return value;
       }
-      return helpers.message('Значение \'movieId\' должно быть целым числом');
-    }),
+      return helpers.message('Невалидный id пользователя');
+    })
+      .messages({
+        'any.required': 'Значение \'movieId\' обязательно',
+      }),
   }),
 });
+
 module.exports = {
   validateUserBody,
   validateCredentials,

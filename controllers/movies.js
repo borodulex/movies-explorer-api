@@ -53,7 +53,7 @@ module.exports = {
       .then(((movie) => res.status(CREATED).send(movie)))
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError(`Ошибка валидации данных movie: ${parseValidationErrors(error)}`));
+          return next(new BadRequestError(`Ошибка валидации данных movie: ${parseValidationErrors(error)}.`));
         }
         return next(error);
       });
@@ -61,15 +61,20 @@ module.exports = {
   remove(req, res, next) {
     const { movieId } = req.params;
 
-    Movie.findOne({ movieId })
+    Movie.findById(movieId)
       .orFail(() => new NotFoundError('Фильм не найден.'))
       .then((movie) => {
         if (String(movie.owner) !== req.user._id) {
           throw new ForbiddenError('Невозможно удалить чужой фильм.');
         }
-        return Movie.deleteOne({ movieId: req.params.movieId })
+        return Movie.findByIdAndRemove(movieId)
           .then(() => res.send({ message: 'Фильм удален.' }));
       })
-      .catch(next);
+      .catch((error) => {
+        if (error.name === 'CastError') {
+          next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
+        }
+        next(error);
+      });
   },
 };

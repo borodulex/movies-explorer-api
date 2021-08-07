@@ -30,10 +30,10 @@ module.exports = {
       }))
       .catch((error) => {
         if (error.name === 'MongoError' && error.code === 11000) {
-          return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+          return next(new ConflictError('Пользователь с таким email уже зарегистрирован.'));
         }
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError(`Ошибка валидации данных user: ${parseValidationErrors(error)}`));
+          return next(new BadRequestError(`Ошибка валидации данных user: ${parseValidationErrors(error)}.`));
         }
         return next(error);
       });
@@ -61,7 +61,7 @@ module.exports = {
       })
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError(`Ошибка валидации данных user: ${parseValidationErrors(error)}`));
+          return next(new BadRequestError(`Ошибка валидации данных user: ${parseValidationErrors(error)}.`));
         }
         return next(error);
       });
@@ -94,13 +94,13 @@ module.exports = {
       .then((user) => res.send(user))
       .catch((error) => {
         if (error.name === 'MongoError' && error.code === 11000) {
-          return next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
+          return next(new ConflictError('Пользователь с таким email уже зарегистрирован.'));
         }
         if (error.name === 'CastError') {
           return next(new BadRequestError('Ошибка приведения значения к ObjectId. Проверьте валидность передаваемого id.'));
         }
         if (error.name === 'ValidationError') {
-          return next(new BadRequestError(`Ошибка валидации данных movie: ${parseValidationErrors(error)}`));
+          return next(new BadRequestError(`Ошибка валидации данных movie: ${parseValidationErrors(error)}.`));
         }
         return next(error);
       });
