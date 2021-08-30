@@ -10,6 +10,20 @@ const BadRequestError = require('../errors/bad-request-err');
 const ConflictError = require('../errors/conflict-err');
 const { JWT_SECRET } = require('../config');
 
+const generateCookie = (res, user) => {
+  const token = jwt.sign(
+    { _id: user._id },
+    JWT_SECRET,
+    { expiresIn: '7d' },
+  );
+
+  return res.cookie('token', token, {
+    maxAge: 3600000 * 24 * 7,
+    httpOnly: true,
+    sameSite: true,
+  });
+};
+
 module.exports = {
   createUser(req, res, next) {
     const {
@@ -24,10 +38,14 @@ module.exports = {
         password: hash,
         name,
       }))
-      .then((createdUser) => res.status(CREATED).send({
-        name: createdUser.name,
-        email: createdUser.email,
-      }))
+      .then((createdUser) => {
+        generateCookie(res, createdUser);
+
+        res.status(CREATED).send({
+          name: createdUser.name,
+          email: createdUser.email,
+        });
+      })
       .catch((error) => {
         if (error.name === 'MongoError' && error.code === 11000) {
           return next(new ConflictError('Пользователь с таким email уже зарегистрирован.'));
@@ -46,17 +64,8 @@ module.exports = {
 
     User.findUserByCredentials(email, password)
       .then((user) => {
-        const token = jwt.sign(
-          { _id: user._id },
-          JWT_SECRET,
-          { expiresIn: '7d' },
-        );
+        generateCookie(res, user);
 
-        res.cookie('token', token, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        });
         return res.send({ messsage: 'Все верно!' });
       })
       .catch((error) => {
